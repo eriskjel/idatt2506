@@ -44,15 +44,14 @@ class Server(private val activity: MainActivity, private val textView: TextView,
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 ui = "Starter Tjener ..."
-                ServerSocket(PORT).use {
-                    ui = "ServerSocket opprettet, venter på at en klient kobler seg til...."
+                val serverSocket = ServerSocket(PORT)
+                ui = "ServerSocket opprettet, venter på at en klient kobler seg til...."
 
-                    clientSocket = it.accept()
-                    ui = "En Klient koblet seg til:\n$clientSocket"
-                    // Send initial welcome message to the client
-                    sendToClient("Velkommen Klient!")
-                    // Start listening for client messages
-                    listenForClientMessages()
+                while (true) {
+                    val client = serverSocket.accept()
+                    CoroutineScope(Dispatchers.IO).launch {
+                        handleClient(client)
+                    }
                 }
             } catch (e: IOException) {
                 e.printStackTrace()
@@ -60,6 +59,17 @@ class Server(private val activity: MainActivity, private val textView: TextView,
             }
         }
     }
+
+    private fun handleClient(client: Socket) {
+        clientSocket = client
+        ui = "En Klient koblet seg til:\n$clientSocket"
+        // Send initial welcome message to the client
+        sendToClient("Velkommen Klient!")
+        // Start listening for client messages
+        listenForClientMessages()
+    }
+
+
 
 
 
@@ -83,7 +93,9 @@ class Server(private val activity: MainActivity, private val textView: TextView,
                 if (message != null) {
                     ui = "Klienten sier:\n$message"
                 } else {
-                    // Handle client disconnection here, e.g., break the loop or take appropriate action.
+                    // Client disconnected, close resources and exit this coroutine/thread
+                    reader.close()
+                    clientSocket?.close()
                     break
                 }
             }
@@ -92,6 +104,7 @@ class Server(private val activity: MainActivity, private val textView: TextView,
             ui = "Error reading message from client: ${e.message}"
         }
     }
+
 
 
 
