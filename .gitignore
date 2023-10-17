@@ -66,3 +66,4 @@
 # Local configuration files (should not be checked in)
 **/local.properties
 
+*.zip

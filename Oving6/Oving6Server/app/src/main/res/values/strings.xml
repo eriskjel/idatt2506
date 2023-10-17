@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">Oving6Server</string>
+    <string name="title_activity_server">ServerActivity</string>
+</resources>

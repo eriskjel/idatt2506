@@ -14,6 +14,9 @@ class MainActivity : AppCompatActivity() {
         val upperLimit = intent.getIntExtra("upper_limit", 100)
         val value = (0..upperLimit).random()
 
+        //create toast
+        val toast = Toast.makeText(applicationContext, "Random value: $value", Toast.LENGTH_SHORT).show()
+
         val returnIntent = Intent()
         returnIntent.putExtra("result", value)
         setResult(Activity.RESULT_OK, returnIntent)
